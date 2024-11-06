@@ -1,29 +1,27 @@
 /**
-* MIT License
-*
-* Copyright (c) 2019 Piotr Kożuchowski
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-*
-* The above copyright notice and this permission notice shall be included in all
-* copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-* SOFTWARE.
-*/
+ * MIT License
+ *
+ * Copyright (c) 2019 Piotr Kożuchowski
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 public inherited sharing class TriggerDispatcher {
-
-
     /**
      * Runs instance of concrete Trigger Handler implementation
      */
@@ -60,25 +58,30 @@ public inherited sharing class TriggerDispatcher {
                 }
             }
         } catch (Exception e) {
-            // Plug-in Logger implementation
-            // Logger.error(new Log(e));
-            throw e;
+            List<SObject> records = Trigger.isDelete ? Trigger.old : Trigger.new;
+
+            for (SObject record : records) {
+                record.addError('An unexpected error occurred. Please contact your administrator.');
+                Logger.error(new LogMessage('Unhandled Exception: {0}', e.getMessage()), record).setExceptionDetails(e);
+            }
+
+            Logger.saveLog();
         }
     }
 
-
     /**
-    * @return True when:
-    * - is in trigger context (can be mocked in unit tests)
-    * - if it's not disabled in Bypass Triggers settings
-    * - if it's not manually disabled in code via  disableTrigger();
-    */
+     * @return True when:
+     * - is in trigger context (can be mocked in unit tests)
+     * - if it's not disabled in Bypass Triggers settings
+     * - if it's not manually disabled in code via  disableTrigger();
+     */
     private static Boolean shouldRun(TriggerContext triggerContext, TriggerHandler th) {
         String thName = th.toString().substringBefore(':');
-        return triggerContext.isExecuting
-            && TriggerSettings.isSObjectTriggerEnabled(triggerContext.sObjectType)
-            && TriggerSettings.isTriggerHandlerEnabled(thName);
+        return triggerContext.isExecuting &&
+            TriggerSettings.isSObjectTriggerEnabled(triggerContext.sObjectType) &&
+            TriggerSettings.isTriggerHandlerEnabled(thName);
     }
 
-    private TriggerDispatcher() {}
+    private TriggerDispatcher() {
+    }
 }
