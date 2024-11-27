@@ -58,7 +58,9 @@ public inherited sharing class TriggerDispatcher {
                 }
             }
         } catch (Exception e) {
-            List<SObject> records = Trigger.isDelete ? Trigger.old : Trigger.new;
+            List<SObject> records = triggerContext.isDelete
+                ? triggerContext.getOldMap().values()
+                : triggerContext.getRecordsMap().values();
 
             for (SObject record : records) {
                 record.addError('An unexpected error occurred. Please contact your administrator.');

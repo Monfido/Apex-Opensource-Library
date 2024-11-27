@@ -317,4 +317,20 @@ private class TriggerDispatcherTest {
             TriggerDispatcher.run(new TriggerHandler(), tc);
         }
     }
+
+    @IsTest
+    static void testLogging() {
+        List<Account> accounts = new List<Account>{
+            new Account(Id = ID_1, Name = NAME_TEST, NumberOfEmployees = 0)
+        };
+        TriggerContext t = TriggerContext.getInstance();
+        Assert.isNull(t.operationType);
+
+        accounts[0].addError('Test error');
+
+        for (TriggerOperation op : TriggerOperation.values()) {
+            TriggerContext tc = new TriggerContext(op, accounts, accounts);
+            TriggerDispatcher.run(null, tc);
+        }
+    }
 }
