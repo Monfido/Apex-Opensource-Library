@@ -58,6 +58,10 @@ public inherited sharing class TriggerDispatcher {
                 }
             }
         } catch (Exception e) {
+            if (Test.isRunningTest()) {
+                Assert.fail('Unhandled Exception: ' + e.getMessage() + '\nStack Trace: ' + e.getStackTraceString());
+            }
+
             List<SObject> records = triggerContext.isDelete
                 ? triggerContext.getOldMap().values()
                 : triggerContext.getRecordsMap().values();
