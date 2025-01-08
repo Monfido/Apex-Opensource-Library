@@ -35,24 +35,31 @@ public inherited sharing class TriggerDispatcher {
             if (shouldRun(triggerContext, triggerHandler)) {
                 switch on triggerContext.operationType {
                     when BEFORE_INSERT {
+                        TriggerUtils.logRecordInserts(triggerContext.getRecords(), true);
                         triggerHandler.beforeInsert(triggerContext.getRecords(), triggerContext);
                     }
                     when BEFORE_UPDATE {
+                        TriggerUtils.logRecordUpdates(triggerContext.getRecords(), triggerContext.getOldMap(), true);
                         triggerHandler.beforeUpdate(triggerContext.getRecords(), triggerContext);
                     }
                     when BEFORE_DELETE {
+                        TriggerUtils.logRecordDeletes(triggerContext.getRecords(), true);
                         triggerHandler.beforeDelete(triggerContext.getRecords(), triggerContext);
                     }
                     when AFTER_INSERT {
+                        TriggerUtils.logRecordInserts(triggerContext.getRecords(), false);
                         triggerHandler.afterInsert(triggerContext.getRecords(), triggerContext);
                     }
                     when AFTER_UPDATE {
+                        TriggerUtils.logRecordUpdates(triggerContext.getRecords(), triggerContext.getOldMap(), false);
                         triggerHandler.afterUpdate(triggerContext.getRecords(), triggerContext);
                     }
                     when AFTER_DELETE {
+                        TriggerUtils.logRecordDeletes(triggerContext.getRecords(), false);
                         triggerHandler.afterDelete(triggerContext.getRecords(), triggerContext);
                     }
                     when AFTER_UNDELETE {
+                        TriggerUtils.logRecordInserts(triggerContext.getRecords(), false);
                         triggerHandler.afterUndelete(triggerContext.getRecords(), triggerContext);
                     }
                 }
