@@ -330,7 +330,7 @@ private class TriggerDispatcherTest {
 
         for (TriggerOperation op : TriggerOperation.values()) {
             TriggerContext tc = new TriggerContext(op, accounts, accounts);
-            TriggerDispatcher.run(null, tc);
+            TriggerDispatcher.run(new TriggerHandler(), tc);
         }
     }
 }
