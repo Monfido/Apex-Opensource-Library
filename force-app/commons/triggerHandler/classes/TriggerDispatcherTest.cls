@@ -368,13 +368,11 @@ private class TriggerDispatcherTest {
             
             // We expect this to catch the exception internally
             Exception ex = null;
-            Test.startTest();
             try {
                 TriggerDispatcher.run(exceptionHandler, tc);
             } catch (Exception e) {
                 ex = e;
             }
-            Test.stopTest();
 
             Assert.isNotNull(ex, 'Exception should be caught internally');
             
