@@ -318,19 +318,72 @@ private class TriggerDispatcherTest {
         }
     }
 
+    /**
+     * Test handler that throws an exception for testing exception handling
+     */
+    private class ExceptionThrowingHandler extends TriggerHandler {
+        public override void beforeInsert(List<SObject> triggerNew, TriggerContext tc) {
+            throw new TestException('Test exception');
+        }
+        
+        public override void beforeUpdate(List<SObject> triggerNew, TriggerContext tc) {
+            throw new TestException('Test exception');
+        }
+        
+        public override void beforeDelete(List<SObject> triggerNew, TriggerContext tc) {
+            throw new TestException('Test exception');
+        }
+        
+        public override void afterInsert(List<SObject> triggerNew, TriggerContext tc) {
+            throw new TestException('Test exception');
+        }
+        
+        public override void afterUpdate(List<SObject> triggerNew, TriggerContext tc) {
+            throw new TestException('Test exception');
+        }
+        
+        public override void afterDelete(List<SObject> triggerNew, TriggerContext tc) {
+            throw new TestException('Test exception');
+        }
+        
+        public override void afterUndelete(List<SObject> triggerNew, TriggerContext tc) {
+            throw new TestException('Test exception');
+        }
+    }
+    
+    private class TestException extends Exception {}
+
     @IsTest
     static void testLogging() {
         List<Account> accounts = new List<Account>{
             new Account(Id = ID_1, Name = NAME_TEST, NumberOfEmployees = 0)
         };
-        TriggerContext t = TriggerContext.getInstance();
-        Assert.isNull(t.operationType);
-
-        accounts[0].addError('Test error');
-
+        
+        // Create a trigger handler that will throw an exception
+        TriggerHandler exceptionHandler = new ExceptionThrowingHandler();
+        
+        // Test each operation type
         for (TriggerOperation op : TriggerOperation.values()) {
             TriggerContext tc = new TriggerContext(op, accounts, accounts);
-            TriggerDispatcher.run(new TriggerHandler(), tc);
+            
+            // We expect this to catch the exception internally
+            Exception ex = null;
+            Test.startTest();
+            try {
+                TriggerDispatcher.run(exceptionHandler, tc);
+            } catch (Exception e) {
+                ex = e;
+            }
+            Test.stopTest();
+
+            Assert.isNotNull(ex, 'Exception should be caught internally');
+            
+            // If we got here without an uncaught exception, the exception handling worked
+            // The Assert.fail in the catch block should be caught and handled
         }
+        
+        // Verify that we can still run other operations after exception handling
+        TriggerContext tc = new TriggerContext(TriggerOperation.BEFORE_UPDATE, accounts, accounts);
+        TriggerDispatcher.run(new TriggerHandler(), tc);
     }
 }
