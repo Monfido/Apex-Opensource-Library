@@ -15,8 +15,8 @@ private class TriggerUtilsTest {
         setupLoggingForTest();
         
         List<SObject> records = new List<SObject>{
-            new Account(Name = 'Test Account', Id = TestFactory.getFakeId(Schema.Account.SObjectType)),
-            new Account(Name = 'Test Account 2', Id = TestFactory.getFakeId(Schema.Account.SObjectType))
+            new Account(Name = 'Test Account', Id = DatabaseService.getFakeId(Schema.Account.SObjectType)),
+            new Account(Name = 'Test Account 2', Id = DatabaseService.getFakeId(Schema.Account.SObjectType))
         };
 
         Test.startTest();
@@ -35,8 +35,8 @@ private class TriggerUtilsTest {
         setupLoggingForTest();
         
         List<SObject> records = new List<SObject>{
-            new Account(Name = 'Test Account', Id = TestFactory.getFakeId(Schema.Account.SObjectType)),
-            new Account(Name = 'Test Account 2', Id = TestFactory.getFakeId(Schema.Account.SObjectType))
+            new Account(Name = 'Test Account', Id = DatabaseService.getFakeId(Schema.Account.SObjectType)),
+            new Account(Name = 'Test Account 2', Id = DatabaseService.getFakeId(Schema.Account.SObjectType))
         };
 
         Map<Id, SObject> oldMap = new Map<Id, SObject>(records.deepClone(true));
@@ -58,8 +58,8 @@ private class TriggerUtilsTest {
         setupLoggingForTest();
         
         List<SObject> records = new List<SObject>{
-            new Account(Name = 'Test Account', Id = TestFactory.getFakeId(Schema.Account.SObjectType)),
-            new Account(Name = 'Test Account 2', Id = TestFactory.getFakeId(Schema.Account.SObjectType))
+            new Account(Name = 'Test Account', Id = DatabaseService.getFakeId(Schema.Account.SObjectType)),
+            new Account(Name = 'Test Account 2', Id = DatabaseService.getFakeId(Schema.Account.SObjectType))
         };
 
         Test.startTest();
